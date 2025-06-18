@@ -1,0 +1,20 @@
+[
+  { "name": "Original", "img": "https://images.cheerios.com/original.jpg" },
+  { "name": "Honey Nut", "img": "https://images.cheerios.com/honeynut.jpg" },
+  { "name": "Apple Cinnamon", "img": "https://images.cheerios.com/applecinnamon.jpg" },
+  { "name": "Multi-Grain", "img": "https://images.cheerios.com/multigrain.jpg" },
+  { "name": "Chocolate", "img": "https://images.cheerios.com/chocolate.jpg" },
+  { "name": "Frosted", "img": "" },
+  { "name": "Fruity", "img": "" },
+  { "name": "Very Berry", "img": "" },
+  { "name": "Strawberry Banana", "img": "" },
+  { "name": "Oat Crunch Cinnamon", "img": "" },
+  { "name": "Oat Crunch Honey", "img": "" },
+  { "name": "Oat Crunch Chocolate", "img": "" },
+  { "name": "Protein Cinnamon", "img": "" },
+  { "name": "Protein Strawberry", "img": "" },
+  { "name": "Protein Cookies & Crème", "img": "" },
+  { "name": "Frosted Lemon", "img": "" },
+  { "name": "Veggie Blend Blueberry Banana", "img": "" },
+  { "name": "Veggie Blend Apple Strawberry", "img": "" }
+]
