@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rank Your Cheerios Favorites</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --secondary: #e0f2fe;
+      --accent: #fbbf24;
+      --background: #f8fafc;
+      --text: #1f2937;
+      --card: #ffffff;
+      --border: #cbd5e1;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      margin: 0;
+      padding: 2em;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1em;
+      color: var(--primary);
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: var(--card);
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1em;
+      margin-bottom: 2em;
+    }
+    .drop-section {
+      display: flex;
+      gap: 2em;
+      flex-wrap: wrap;
+    }
+    .list {
+      flex: 1;
+      min-width: 300px;
+      background: var(--secondary);
+      border: 2px dashed var(--primary);
+      padding: 1em;
+      border-radius: 10px;
+      min-height: 300px;
+    }
+    .list h3 {
+      text-align: center;
+      margin-top: 0;
+      color: var(--primary);
+    }
+    .flavor {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5em;
+      margin: 0.3em 0;
+      cursor: grab;
+      user-select: none;
+      transition: box-shadow 0.2s ease;
+    }
+    .flavor:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .flavor img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    .submit-btn {
+      margin-top: 2em;
+      width: 100%;
+      padding: 1em;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .submit-btn:hover {
+      background-color: #2563eb;
+    }
+    #thanksMessage {
+      text-align: center;
+      margin-top: 1em;
+      color: var(--accent);
+      font-weight: bold;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Rank Your Cheerios Favorites</h1>
+    <p>Drag and drop Cheerios flavors into your favorites and least favorites list. Reorder to rank them.</p>
+
+    <h2>All Flavors</h2>
+    <div class="grid" id="allFlavors">Loading flavors...</div>
+
+    <div class="drop-section" style="display:none;">
+      <div class="list" id="favorites">
+        <h3>Favorites</h3>
+      </div>
+      <div class="list" id="leastFavorites">
+        <h3>Least Favorites</h3>
+      </div>
+    </div>
+
+    <button class="submit-btn" style="display:none;" onclick="handleSubmit()">Submit</button>
+    <p id="thanksMessage" style="display:none;">Thanks for sharing your opinion!</p>
+  </div>
+
+  <script>
+    const allFlavorsGrid = document.getElementById('allFlavors');
+    const dropSection = document.querySelector('.drop-section');
+    const submitBtn = document.querySelector('.submit-btn');
+
+    const createFlavorCard = (flavor) => {
+      const div = document.createElement('div');
+      div.className = 'flavor';
+      div.dataset.name = flavor.name;
+      if (flavor.img) {
+        const img = document.createElement('img');
+        img.src = flavor.img;
+        img.alt = flavor.name;
+        div.appendChild(img);
+      }
+      div.appendChild(document.createTextNode(flavor.name));
+      return div;
+    };
+
+    fetch('flavors.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(flavors => {
+        allFlavorsGrid.textContent = '';
+        flavors.forEach(flavor => allFlavorsGrid.appendChild(createFlavorCard(flavor)));
+
+        new Sortable(allFlavorsGrid, {
+          group: {
+            name: 'cheerios',
+            pull: 'clone',
+            put: false
+          },
+          sort: false,
+          animation: 150
+        });
+
+        ['favorites', 'leastFavorites'].forEach(id => {
+          new Sortable(document.getElementById(id), {
+            group: 'cheerios',
+            animation: 150,
+            ghostClass: 'sortable-ghost'
+          });
+        });
+
+        dropSection.style.display = 'flex';
+        submitBtn.style.display = 'block';
+      })
+      .catch(err => {
+        allFlavorsGrid.textContent = 'Failed to load flavor data.';
+        console.error('Error loading flavors.json:', err);
+      });
+
+    function handleSubmit() {
+      const getList = (id) => [...document.getElementById(id).querySelectorAll('.flavor')].map(f => f.dataset.name);
+      const favorites = getList('favorites');
+      const leastFavorites = getList('leastFavorites');
+
+      console.log("Favorites:", favorites);
+      console.log("Least Favorites:", leastFavorites);
+
+      dropSection.style.display = 'none';
+      allFlavorsGrid.style.display = 'none';
+      submitBtn.style.display = 'none';
+      document.getElementById('thanksMessage').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
